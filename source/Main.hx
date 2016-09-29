@@ -24,6 +24,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import runloop.RunLoop;
+import preferences.Preferences;
+import preferences.Editor;
 import duellkit.DuellKit;
 
 import input.Touch;
@@ -31,15 +34,12 @@ import input.MouseButtonState;
 import input.MouseButton;
 import input.MouseButtonEventData;
 
-import tests.OpenGLTest;
-
 class Main
 {
     inline static private var borderInputCoverage: Float = 1.0/3.0;
 
     static public var _main: Main;
 
-    static private var currentTest: OpenGLTest;
     static private var testArray: Array<Dynamic>;
     static private var currentTestNumber: Int = 0;
 
@@ -55,10 +55,22 @@ class Main
 
     public function startAfterDuellIsInitialized() : Void
     {
-
+        trace('startAfterDuellIsInitialized');
         DuellKit.instance().clearAndPresentDefaultBuffer = false; // We are cool and clear ourselfs.
 
         configureInput();
+
+        var func = function()
+        {
+            var testVal: Int = Preferences.getInt("testVal");
+            trace('test val is $testVal');
+
+            var editor: Editor = Preferences.getEditor();
+            editor.putInt("testVal", ++testVal);
+
+            editor.synchronize();
+        }
+        RunLoop.getMainLoop().delay(func, 10);
     }
 
     private function configureInput(): Void
