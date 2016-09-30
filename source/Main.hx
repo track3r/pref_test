@@ -24,6 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import runloop.Priority;
 import runloop.RunLoop;
 import preferences.Preferences;
 import preferences.Editor;
@@ -53,6 +54,7 @@ class Main
         DuellKit.initialize(startAfterDuellIsInitialized);
     }
 
+    private static var _id = 0;
     public function startAfterDuellIsInitialized() : Void
     {
         trace('startAfterDuellIsInitialized');
@@ -70,7 +72,16 @@ class Main
 
             editor.synchronize();
         }
-        RunLoop.getMainLoop().delay(func, 10);
+        RunLoop.getMainLoop().delay(func, 3);
+        var func2: Void -> Void = null;
+        func2 = function()
+        {
+            var testVal: Int = Preferences.getInt("testVal");
+            trace('${_id++} test val is $testVal');
+            RunLoop.getMainLoop().queue(func2, Priority.PriorityASAP);
+        }
+
+        RunLoop.getMainLoop().queue(func2, Priority.PriorityASAP);
     }
 
     private function configureInput(): Void
